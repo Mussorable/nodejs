@@ -1,36 +1,25 @@
-const http = require("http");
-const fs = require("fs");
+const express = require("express");
 
-const server = http.createServer((req, res) => {
-  res.setHeader("Content-type", "text/html");
+const bodyParses = require("body-parser");
 
-  const url = req.url;
-  const method = req.method;
+const app = express();
 
-  if (url === "/") {
-    res
-      .setHeader("Content-Type", "text/html")
-      .write(
-        '<form action="/message" method="POST"><input name="message-text" type="text"><button type="submit"></button</form>'
-      );
-    return res.end();
-  }
+app.use(bodyParses.urlencoded({ extended: false }));
 
-  if (url === "/message" && method === "POST") {
-    const body = [];
-    req.on("data", (chunk) => {
-      console.log(chunk);
-      body.push(chunk);
-    });
-    req.on("end", () => {
-      const parsedArray = Buffer.concat(body).toString();
-      const message = parsedArray.split("=")[1];
-      fs.writeFileSync("message.txt", message);
-    });
-    res.statusCode = 302;
-    res.setHeader("Location", "/");
-    return res.end();
-  }
+app.use("/users", (req, res) => {
+  console.log('Inside "/users" endopint');
+  res.send(
+    '<form action="/add-product" method="POST"><input type="text" name="title"><button type="submit">Submit</button></form>'
+  );
 });
 
-server.listen(3000);
+app.use("/add-product", (req, res, next) => {
+  console.log(req.body);
+  res.redirect("/");
+});
+
+app.use("/", (req, res, next) => {
+  res.send("<h1>inside /</h1>");
+});
+
+app.listen(5173);
