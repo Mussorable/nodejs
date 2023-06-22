@@ -9,8 +9,11 @@ const bodyParses = require("body-parser");
 
 const app = express();
 
+// It allowing users to access public folder
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(bodyParses.urlencoded({ extended: false }));
-app.use("/admin", adminRoutes);
+app.use("/admin", adminRoutes.routes);
 app.use(shopRouter);
 
 app.use((req, res) => {
